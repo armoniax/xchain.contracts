@@ -1,0 +1,8 @@
+/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build/contracts/CMakeFiles/edit_cache.dir
+/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build/contracts/CMakeFiles/rebuild_cache.dir
+/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build/contracts/amax.mtoken/CMakeFiles/amax.mtoken.dir
+/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build/contracts/amax.mtoken/CMakeFiles/edit_cache.dir
+/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build/contracts/amax.mtoken/CMakeFiles/rebuild_cache.dir
+/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build/contracts/amax.xchain/CMakeFiles/amax.xchain.dir
+/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build/contracts/amax.xchain/CMakeFiles/edit_cache.dir
+/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build/contracts/amax.xchain/CMakeFiles/rebuild_cache.dir
