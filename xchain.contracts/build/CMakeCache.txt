@@ -146,7 +146,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=amax_contracts
+CMAKE_PROJECT_NAME:STATIC=xchain_contracts
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib
@@ -221,6 +221,15 @@ amax_contracts_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 amax_contracts_SOURCE_DIR:STATIC=/Users/richardchen/work/amax/amax.xchain/xchain.contracts
+
+//Value Computed by CMake
+xchain_contracts_BINARY_DIR:STATIC=/Users/richardchen/work/amax/amax.xchain/xchain.contracts/build
+
+//Value Computed by CMake
+xchain_contracts_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+xchain_contracts_SOURCE_DIR:STATIC=/Users/richardchen/work/amax/amax.xchain/xchain.contracts
 
 
 ########################

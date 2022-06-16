@@ -10,7 +10,7 @@ VERSION="0.1.1"
 BUILD_DIR="../../build"
 
 VENDOR=""
-PROJECT="amax_contracts"
+PROJECT="xchain_contracts"
 DESC=""
 URL=""
 EMAIL=""

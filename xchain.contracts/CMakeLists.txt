@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(amax_contracts)
+project(xchain_contracts)
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
