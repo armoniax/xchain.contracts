@@ -6,7 +6,7 @@
 
 namespace amax {
 
-uint64_t fee_pct   = 50;
+uint64_t fee_pct   = 30; //boost by 10000
 
 inline int64_t get_precision(const symbol &s) {
     int64_t digit = s.precision();

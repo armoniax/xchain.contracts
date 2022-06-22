@@ -17,7 +17,7 @@ include(ExternalProject)
 
 find_package(amax.cdt)
 
-message(STATUS "Building amax.contracts v${VERSION_FULL}")
+message(STATUS "Building amax.xchain v${VERSION_FULL}")
 
 set(AMAX_CDT_VERSION_MIN "1.7.0")
 set(AMAX_CDT_VERSION_SOFT_MAX "1.7.99")
