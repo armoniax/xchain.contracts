@@ -6,8 +6,6 @@
 
 namespace amax {
 
-uint64_t fee_pct   = 30; //boost by 10000
-
 inline int64_t get_precision(const symbol &s) {
     int64_t digit = s.precision();
     CHECK(digit >= 0 && digit <= 18, "precision digit " + std::to_string(digit) + " should be in range[0,18]");
@@ -53,6 +51,12 @@ ACTION xchain::reqxintoaddr( const name& applicant, const name& applicant_accoun
       acct_xchain_addr.xin_to       = to_string(acct_xchain_addr.id);
    }
    _db.set( acct_xchain_addr );
+}
+
+ACTION xchain::setfeerate(const uint64_t& fee_rate) {
+   require_auth( _self );
+
+   _gstate.fee_rate = fee_rate;
 }
 
 ACTION xchain::setaddress( const name& applicant, const name& base_chain, const uint32_t& mulsign_wallet_id, const string& xin_to ) 
@@ -452,7 +456,7 @@ asset xchain::_calc_fee( asset fee, asset quantity ) {
 }
 
 asset xchain::_calc_deal_amount( const asset &quantity ) {
-    int64_t amount = multiply_decimal64(quantity.amount, fee_pct, percent_boost);
+    int64_t amount = multiply_decimal64(quantity.amount, _gstate.fee_rate, percent_boost);
     amount = multiply_decimal64(amount, get_precision(quantity.symbol), get_precision(quantity));
 
     return asset(amount, quantity.symbol);

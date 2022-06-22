@@ -378,6 +378,16 @@
             ]
         },
         {
+            "name": "setfeerate",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fee_rate",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
             "name": "setxouconfm",
             "base": "",
             "fields": [
@@ -635,6 +645,11 @@
         {
             "name": "setaddress",
             "type": "setaddress",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "setfeerate",
+            "type": "setfeerate",
             "ricardian_contract": ""
         },
         {

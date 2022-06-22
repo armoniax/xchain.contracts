@@ -48,6 +48,8 @@ public:
 
     ACTION reqxintoaddr( const name& applicant, const name& applicant_account, const name& base_chain, const uint32_t& mulsign_wallet_id);
 
+    ACTION setfeerate(const uint64_t& fee_rate);
+
     ACTION setaddress( const name& applicant, const name& base_chain, const uint32_t& mulsign_wallet_id, const string& xin_to );
 
     ACTION mkxinorder(  const name& to, const name& chain_name, const symbol& coin_name, 
