@@ -97,5 +97,7 @@ public:
 
     asset _calc_fee(asset fee, asset quantity );
     asset _calc_deal_amount( const asset &quantity );
+
+    void _reward_farm( const asset& xin_quantity, const name& farmer );
 };
 } //namespace apollo

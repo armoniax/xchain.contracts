@@ -49,24 +49,34 @@ enum class err: uint8_t {
 };
 
 namespace chain {
-    static constexpr eosio::name BTC         = "btc"_n;
-    static constexpr eosio::name ETH         = "eth"_n;
-    static constexpr eosio::name AMC         = "amc"_n;
-    static constexpr eosio::name BSC         = "bsc"_n;
-    static constexpr eosio::name HECO        = "heco"_n;
-    static constexpr eosio::name POLYGON     = "polygon"_n;
-    static constexpr eosio::name TRON        = "tron"_n;
-    static constexpr eosio::name EOS         = "eos"_n;
+    static constexpr eosio::name BTC            = "btc"_n;
+    static constexpr eosio::name ETH            = "eth"_n;
+    static constexpr eosio::name AMC            = "amc"_n;
+    static constexpr eosio::name BSC            = "bsc"_n;
+    static constexpr eosio::name HECO           = "heco"_n;
+    static constexpr eosio::name POLYGON        = "polygon"_n;
+    static constexpr eosio::name TRON           = "tron"_n;
+    static constexpr eosio::name EOS            = "eos"_n;
 };
 
 namespace coin {
-    static constexpr eosio::name BTC        = "btc"_n;
-    static constexpr eosio::name ETH        = "eth"_n;
-    static constexpr eosio::name USDT       = "usdt"_n;
-    static constexpr eosio::name CNYD       = "cnyd"_n;
+    static constexpr eosio::name BTC            = "btc"_n;
+    static constexpr eosio::name ETH            = "eth"_n;
+    static constexpr eosio::name USDT           = "usdt"_n;
+    static constexpr eosio::name CNYD           = "cnyd"_n;
 };
 
 #define TBL struct [[eosio::table, eosio::contract("amax.xchain")]]
+
+struct aplink_farm {
+    name contract       = "aplink.farm"_n;
+    uint64_t land_id    = 1;    //xch-farm-land
+    map<string, asset> xin_reward_conf = {
+        { "MBTC",  asset_from_string("1000.00000 APL") },
+        { "METH",  asset_from_string("50.000000 APL")  },
+        { "MUSDT", asset_from_string("0.050000 APL")   } 
+    };
+};
 
 struct [[eosio::table("global"), eosio::contract("amax.xchain")]] global_t {
     name admin;                 // default is contract self
@@ -74,9 +84,10 @@ struct [[eosio::table("global"), eosio::contract("amax.xchain")]] global_t {
     name checker;
     name fee_collector;         // mgmt fees to collector
     uint64_t fee_rate = 4;      // boost by 10,000, i.e. 0.04%
+    aplink_farm apl_farm;
     bool active = false;
 
-    EOSLIB_SERIALIZE( global_t, (admin)(maker)(checker)(fee_collector)(fee_rate)(active) )
+    // EOSLIB_SERIALIZE( global_t, (admin)(maker)(checker)(fee_collector)(fee_rate)(active) )
 };
 
 typedef eosio::singleton< "global"_n, global_t > global_singleton;

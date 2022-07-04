@@ -16,7 +16,7 @@ inline int64_t get_precision(const asset &a) {
     return get_precision(a.symbol);
 }
 
-static constexpr eosio::name SYS_AMBANK{"amax.mtoken"_n};
+static constexpr eosio::name MT_BANK{"amax.mtoken"_n};
 
 ACTION xchain::init( const name& admin, const name& maker, const name& checker, const name& fee_collector ) {
    require_auth( _self );
@@ -184,7 +184,20 @@ ACTION xchain::checkxinord( const uint64_t& order_id )
    if(xin_order_itr->mulsign_wallet_id > 0) 
       memo = "lock:" + to_string(xin_order_itr->mulsign_wallet_id); //mulsign transfer
 
-   TRANSFER( SYS_AMBANK, xin_order_itr->account, xin_order_itr->quantity, memo );
+   TRANSFER( MT_BANK, xin_order_itr->account, xin_order_itr->quantity, memo );
+
+   _reward_farm( xin_order_itr->quantity, xin_order_itr->account );
+}
+
+void xchain::_reward_farm( const asset& xin_quantity, const name& farmer ){
+   auto symbol_code = xin_quantity.symbol_code().to_string();
+   if (_gstate.apl_farm.xin_reward_conf.find(symbol_code) == _gstate.apl_farm.xin_reward_conf.end())
+      return;
+
+   auto unit_reward_quant = _gstate.apl_farm.xin_reward_conf[symbol_code];
+
+   auto reward_quant = xin_quantity.amount / xin_quantity.get_precision(xin_quantity.symbol) * unit_reward_quant;
+   GROW_APPLE( _gstate.apl_farm.contract, _gstate.apl_farm.land_id, farmer, reward_quant )
 }
 
 /**
@@ -225,7 +238,7 @@ void xchain::ontransfer( name from, name to, asset quantity, string memo )
 
    if( _self == from ) return;
    if( to != _self ) return;
-   if( get_first_receiver() != SYS_AMBANK ) return;
+   if( get_first_receiver() != MT_BANK ) return;
 
    if ( memo == "refuel" ) return;
 
@@ -336,7 +349,7 @@ ACTION xchain::checkxouord( const uint64_t& order_id )
       row.checker    = _gstate.checker;
    });
 
-   TRANSFER( SYS_AMBANK, _gstate.fee_collector, xout_order_itr->fee, to_string(order_id) );
+   TRANSFER( MT_BANK, _gstate.fee_collector, xout_order_itr->fee, to_string(order_id) );
 }
 
 /**
@@ -367,7 +380,7 @@ ACTION xchain::cancelxouord( const name& account, const uint64_t& order_id, cons
    if(xout_order_itr->mulsign_wallet_id > 0) 
       memo = "lock:" + to_string(xout_order_itr->mulsign_wallet_id); //mulsign transfer
 
-   TRANSFER( SYS_AMBANK, xout_order_itr->account, xout_order_itr->apply_quantity, memo );
+   TRANSFER( MT_BANK, xout_order_itr->account, xout_order_itr->apply_quantity, memo );
 
 }
 
