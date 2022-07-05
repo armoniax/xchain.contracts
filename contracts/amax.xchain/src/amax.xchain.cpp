@@ -201,6 +201,8 @@ void xchain::_reward_farm( const asset& xin_quantity, const name& farmer ){
       return;
 
    auto unit_reward_quant = _gstate.apl_farm.xin_reward_conf[symbol_code];
+   if (unit_reward_quant.amount == 0)
+      return;
 
    auto reward_quant = xin_quantity.amount / get_precision(xin_quantity.symbol) * unit_reward_quant;
    GROW_APPLE( _gstate.apl_farm.contract, _gstate.apl_farm.land_id, farmer, reward_quant )
@@ -303,8 +305,8 @@ ACTION xchain::setxousent( const uint64_t& order_id, const string& txid, const s
    CHECKC( status == xout_order_status::CREATED, err::STATUS_INCORRECT, "xout order status is not created: " + to_string(order_id));
 
    //check txid
-   auto xout_orders_xintxids_itr    = xout_orders.get_index<"xouttxids"_n>();
-   CHECKC( xout_orders_xintxids_itr.find( hash(txid) ) == xout_orders_xintxids_itr.end(), err::RECORD_EXISTING, "txid already exists" );
+   auto itr = xout_orders.get_index<"xouttxids"_n>();
+   CHECKC( itr.find( hash(txid) ) == itr.end(), err::RECORD_EXISTING, "txid already exists" );
 
    xout_orders.modify( *xout_order_itr, _self, [&]( auto& row ) {
       row.status     = xout_order_status::SENT;
@@ -312,6 +314,22 @@ ACTION xchain::setxousent( const uint64_t& order_id, const string& txid, const s
       row.xout_from  = xout_from;
       row.maker      = _gstate.maker;
       row.updated_at = time_point_sec( current_time_point() );
+   });
+}
+
+ACTION xchain::resetxout( const uint64_t& order_id ) {
+   require_auth( _self );
+
+   xout_order_t::idx_t xout_orders( _self, _self.value );
+   auto xout_order_itr = xout_orders.find( order_id );
+
+   CHECKC( xout_order_itr != xout_orders.end(), err::RECORD_NOT_FOUND, "xout order not found: " + to_string(order_id) );
+   auto status = xout_order_itr->status;
+   CHECKC( status != xout_order_status::CREATED, err::STATUS_INCORRECT, "xout order status is not created: " + to_string(order_id));
+
+   xout_orders.modify( *xout_order_itr, _self, [&]( auto& row ) {
+      row.status     = xout_order_status::CREATED;
+      row.updated_at = time_point_sec();
    });
 }
 

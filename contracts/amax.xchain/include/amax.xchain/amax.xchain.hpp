@@ -91,6 +91,9 @@ public:
     ACTION addchaincoin( const name& account, const name& chain, const symbol& coin, const asset& fee );
     ACTION delchaincoin( const name& account, const name& chain, const symbol& coin );
 
+    /// admin actions
+    ACTION resetxout( const uint64_t& order_id );
+
    private:
     void _check_xin_addr( const name& to, const name& chain_name, const string& xin_to, uint32_t& mulsign_wallet_id );
     checksum256 _get_tixd();
