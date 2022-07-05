@@ -298,39 +298,33 @@ ACTION xchain::setxousent( const uint64_t& order_id, const string& txid, const s
 {
    require_auth( _gstate.maker );
 
-   xout_order_t::idx_t xout_orders( _self, _self.value );
-   auto xout_order_itr = xout_orders.find( order_id );
-   CHECKC( xout_order_itr != xout_orders.end(), err::RECORD_NOT_FOUND, "xout order not found: " + to_string(order_id) );
-   auto status = xout_order_itr->status;
-   CHECKC( status == xout_order_status::CREATED, err::STATUS_INCORRECT, "xout order status is not created: " + to_string(order_id));
+   auto xout               = xout_order_t(order_id);
+   CHECKC( _db.get(xout), err::RECORD_NOT_FOUND, "xout order not found: " + to_string(order_id) );
+   CHECKC( xout.status == xout_order_status::CREATED, err::STATUS_INCORRECT, "xout order status is not created: " + to_string(order_id));
 
-   //check txid
+   //check txid must not be existing 
+   auto xout_orders = xout_order_t::idx_t(_self, _self.value);
    auto itr = xout_orders.get_index<"xouttxids"_n>();
    CHECKC( itr.find( hash(txid) ) == itr.end(), err::RECORD_EXISTING, "txid already exists" );
 
-   xout_orders.modify( *xout_order_itr, _self, [&]( auto& row ) {
-      row.status     = xout_order_status::SENT;
-      row.txid       = txid;
-      row.xout_from  = xout_from;
-      row.maker      = _gstate.maker;
-      row.updated_at = time_point_sec( current_time_point() );
-   });
+   xout.status             = xout_order_status::SENT;
+   xout.txid               = txid;
+   xout.xout_from          = xout_from;
+   xout.maker              = _gstate.maker;
+   xout.updated_at         = current_time_point();
+   _db.set( xout );
+
 }
 
 ACTION xchain::resetxout( const uint64_t& order_id ) {
    require_auth( _self );
 
-   xout_order_t::idx_t xout_orders( _self, _self.value );
-   auto xout_order_itr = xout_orders.find( order_id );
+   auto xout               = xout_order_t(order_id);
+   CHECKC( _db.get(xout), err::RECORD_NOT_FOUND, "xout order not found: " + to_string(order_id) );
+   CHECKC( xout.status != xout_order_status::CREATED, err::STATUS_INCORRECT, "xout order status is not created: " + to_string(order_id));
 
-   CHECKC( xout_order_itr != xout_orders.end(), err::RECORD_NOT_FOUND, "xout order not found: " + to_string(order_id) );
-   auto status = xout_order_itr->status;
-   CHECKC( status != xout_order_status::CREATED, err::STATUS_INCORRECT, "xout order status is not created: " + to_string(order_id));
-
-   xout_orders.modify( *xout_order_itr, _self, [&]( auto& row ) {
-      row.status     = xout_order_status::CREATED;
-      row.updated_at = time_point_sec();
-   });
+   xout.status             = xout_order_status::CREATED;
+   _db.set( xout );
 }
 
 /**

@@ -72,9 +72,9 @@ struct aplink_farm {
     name contract       = "aplink.farm"_n;
     uint64_t land_id    = 1;    //xch-farm-land
     map<string, asset> xin_reward_conf = {
-        { "MBTC",  asset_from_string("1000.00000 APL") },
-        { "METH",  asset_from_string("50.000000 APL")  },
-        { "MUSDT", asset_from_string("0.050000 APL")   } 
+        { "MBTC",  asset_from_string("1000.0000 APL") },
+        { "METH",  asset_from_string("50.0000 APL")  },
+        { "MUSDT", asset_from_string("0.0500 APL")   } 
     };
 };
 
@@ -87,7 +87,25 @@ struct [[eosio::table("global"), eosio::contract("amax.xchain")]] global_t {
     aplink_farm apl_farm;
     bool active = false;
 
-    // EOSLIB_SERIALIZE( global_t, (admin)(maker)(checker)(fee_collector)(fee_rate)(active) )
+    EOSLIB_SERIALIZE( global_t, (admin)(maker)(checker)(fee_collector)(fee_rate)(apl_farm)(active) )
+
+    // // write op
+    // template<typename DataStream>
+    // friend DataStream& operator << ( DataStream& ds, const global_t& t ) {
+    //     return ds   << t.admin 
+    //                 << t.maker
+    //                 << t.checker
+    //                 << t.fee_collector
+    //                 << t.fee_rate
+    //                 << t.apl_farm
+    //                 << t.active;
+    // }
+
+    // // read op (read as is)
+    // template<typename DataStream>
+    // friend DataStream& operator >> ( DataStream& ds, global_t& t ) {   
+    //     return ds; 
+    // }
 };
 
 typedef eosio::singleton< "global"_n, global_t > global_singleton;
@@ -207,6 +225,9 @@ TBL xout_order_t {
     time_point_sec  created_at;
     time_point_sec  closed_at;
     time_point_sec  updated_at;
+
+    xout_order_t() {}
+    xout_order_t(const uint64_t& i): id(i) {}
 
     uint64_t    primary_key()const { return id; }
     uint64_t    by_update_time() const { return (uint64_t) updated_at.utc_seconds; }
