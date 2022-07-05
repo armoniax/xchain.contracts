@@ -192,7 +192,7 @@ ACTION xchain::checkxinord( const uint64_t& order_id )
 
    TRANSFER( MT_BANK, xin_order_itr->account, xin_order_itr->quantity, memo );
 
-   _reward_farm( xin_order_itr->quantity, xin_order_itr->account );
+   // _reward_farm( xin_order_itr->quantity, xin_order_itr->account );
 }
 
 void xchain::_reward_farm( const asset& xin_quantity, const name& farmer ){
