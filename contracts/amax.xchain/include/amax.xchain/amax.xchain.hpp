@@ -74,7 +74,7 @@ public:
 
     ACTION setxousent( const uint64_t& order_id, const string& txid, const string& xout_from );
 
-    ACTION setxouconfm( const uint64_t& order_id );
+    ACTION confirmxout( const uint64_t& order_id );
 
     /**
      * checker to confirm out order
