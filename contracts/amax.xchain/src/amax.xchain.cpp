@@ -328,9 +328,9 @@ ACTION xchain::resetxout( const uint64_t& order_id ) {
 }
 
 /**
- * maker confirms the order
+ * maker onpay the order
  * */
-ACTION xchain::confirmxout( const uint64_t& order_id )
+ACTION xchain::setxouconfm( const uint64_t& order_id )
 {
    require_auth( _gstate.maker );
 
