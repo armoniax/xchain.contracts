@@ -1,5 +1,6 @@
 #include <amax.xchain/amax.xchain.hpp>
-#include <aplink.farm.hpp>
+#include <aplink.farm/aplink.farm.hpp>
+
 #include<utils.hpp>
 #include<string>
 #include <eosio/transaction.hpp>
@@ -7,10 +8,9 @@
 
 namespace amax {
 
-using grow_action = aplink::farm::grow_action;
-#define GROW_APPLE(farm, land_id, to, quantity) \
-    {   grow_action(farm, { {_self, active_perm} }).send( \
-            to, land_id, quantity );}
+#define ALLOT_APPLE(farm_contract, lease_id, to, quantity, memo) \
+    {   aplink::farm::allot_action(farm_contract, { {_self, active_perm} }).send( \
+            lease_id, to, quantity, memo );}
 
 inline int64_t get_precision(const symbol &s) {
     int64_t digit = s.precision();
@@ -192,7 +192,11 @@ ACTION xchain::checkxinord( const uint64_t& order_id )
 
    TRANSFER( MT_BANK, xin_order_itr->account, xin_order_itr->quantity, memo );
 
-   // _reward_farm( xin_order_itr->quantity, xin_order_itr->account );
+   auto apples = asset(0, APLINK_SYMBOL);
+   aplink::farm::available_apples( _gstate.apl_farm.contract, _gstate.apl_farm.lease_id, apples );
+   if (apples.amount == 0) return;
+   _reward_farm( xin_order_itr->quantity, xin_order_itr->account );
+
 }
 
 void xchain::_reward_farm( const asset& xin_quantity, const name& farmer ){
@@ -205,7 +209,7 @@ void xchain::_reward_farm( const asset& xin_quantity, const name& farmer ){
       return;
 
    auto reward_quant = xin_quantity.amount / get_precision(xin_quantity.symbol) * unit_reward_quant;
-   GROW_APPLE( _gstate.apl_farm.contract, _gstate.apl_farm.land_id, farmer, reward_quant )
+   ALLOT_APPLE( _gstate.apl_farm.contract, _gstate.apl_farm.lease_id, farmer, reward_quant, "xin reward" )
 }
 
 /**
@@ -316,6 +320,12 @@ ACTION xchain::setxousent( const uint64_t& order_id, const string& txid, const s
 
 }
 
+/**
+ * @brief only in exceptional cases would below be invoked
+ * 
+ * @param order_id 
+ * @return ACTION 
+ */
 ACTION xchain::resetxout( const uint64_t& order_id ) {
    require_auth( _self );
 

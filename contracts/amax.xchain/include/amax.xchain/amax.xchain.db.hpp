@@ -70,7 +70,7 @@ namespace coin {
 
 struct aplink_farm {
     name contract       = "aplink.farm"_n;
-    uint64_t land_id    = 1;    //xch-farm-land
+    uint64_t lease_id    = 1;    //xch-farm-land
     map<string, asset> xin_reward_conf = {
         { "MBTC",  asset_from_string("1000.0000 APL") },
         { "METH",  asset_from_string("50.0000 APL")  },
