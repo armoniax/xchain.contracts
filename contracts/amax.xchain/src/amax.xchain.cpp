@@ -1,10 +1,10 @@
 #include <amax.xchain/amax.xchain.hpp>
 #include <aplink.farm/aplink.farm.hpp>
 
-#include<utils.hpp>
-#include<string>
 #include <eosio/transaction.hpp>
-
+#include<utils.hpp>
+#include<math.hpp>
+#include<string>
 
 namespace amax {
 
@@ -23,6 +23,7 @@ inline int64_t get_precision(const asset &a) {
 }
 
 static constexpr eosio::name MT_BANK{"amax.mtoken"_n};
+static constexpr symbol APL_SYMBOL = symbol(symbol_code("APL"), 4);
 
 ACTION xchain::init( const name& admin, const name& maker, const name& checker, const name& fee_collector ) {
    require_auth( _self );
@@ -79,13 +80,10 @@ ACTION xchain::setaddress( const name& applicant, const name& base_chain, const 
    const auto& itr 			         = acctchain_index.find( make128key( applicant.value, make64key( base_chain.value, mulsign_wallet_id )) );
    CHECKC( itr != acctchain_index.end(), err::RECORD_EXISTING, "xchaddrs not found" );
 
-
    auto xinto_index 			         = xchaddrs.get_index<"xinto"_n>();
    const auto& xinto_itr			   = xinto_index.find( hash(xin_to) );
 
    CHECKC( xinto_itr == xinto_index.end(), err::RECORD_EXISTING, "xchaddrs: the record already exist, " + xin_to);
-
-
 
    xchaddrs.modify( *itr, _self, [&]( auto& row ) {
       row.status     = address_status::PROVISIONED;
@@ -122,13 +120,13 @@ ACTION xchain::mkxinorder( const name& to, const name& chain_name, const symbol&
    auto txid_index 			   = xin_orders.get_index<"xintxids"_n>();
    CHECKC( txid_index.find( hash(txid) ) == txid_index.end(), err::RECORD_NOT_FOUND, "txid already existing!" );
 
-   auto created_at = time_point_sec( current_time_point() );
-   auto xin_order_id = xin_orders.available_primary_key();
+   auto now                = current_time_point();
+   auto xin_order_id       = xin_orders.available_primary_key();
 
    xin_orders.emplace( _self, [&]( auto& row ) {
       row.id 					= xin_order_id;
       row.txid 			   = txid;
-      row.account      = to;
+      row.account          = to;
       row.mulsign_wallet_id = mulsign_wallet_id;
       row.xin_from         = xin_from;
       row.xin_to           = xin_to;
@@ -137,8 +135,8 @@ ACTION xchain::mkxinorder( const name& to, const name& chain_name, const symbol&
       row.quantity		   = quantity;
       row.status   			= xin_order_status::CREATED;
       row.maker			   = _gstate.maker;
-      row.created_at       = created_at;
-      row.updated_at       = created_at;
+      row.created_at       = now;
+      row.updated_at       = now;
    });
 }
 
@@ -195,6 +193,7 @@ ACTION xchain::checkxinord( const uint64_t& order_id )
    auto apples = asset(0, APLINK_SYMBOL);
    aplink::farm::available_apples( _gstate.apl_farm.contract, _gstate.apl_farm.lease_id, apples );
    if (apples.amount == 0) return;
+
    _reward_farm( xin_order_itr->quantity, xin_order_itr->account );
 
 }
@@ -208,7 +207,8 @@ void xchain::_reward_farm( const asset& xin_quantity, const name& farmer ){
    if (unit_reward_quant.amount == 0)
       return;
 
-   auto reward_quant = xin_quantity.amount / get_precision(xin_quantity.symbol) * unit_reward_quant;
+   auto reward_amount = wasm::safemath::mul( unit_reward_quant.amount, xin_quantity.amount, get_precision(xin_quantity.symbol) );
+   auto reward_quant = asset( reward_amount, APL_SYMBOL );
    ALLOT_APPLE( _gstate.apl_farm.contract, _gstate.apl_farm.lease_id, farmer, reward_quant, "xin reward" )
 }
 

@@ -69,12 +69,13 @@ namespace coin {
 #define TBL struct [[eosio::table, eosio::contract("amax.xchain")]]
 
 struct aplink_farm {
-    name contract       = "aplink.farm"_n;
-    uint64_t lease_id    = 1;    //xch-farm-land
+    name contract           = "aplink.farm"_n;
+    uint64_t lease_id       = 1;    //xch-farm-land
     map<string, asset> xin_reward_conf = {
-        { "MBTC",  asset_from_string("1000.0000 APL") },
-        { "METH",  asset_from_string("50.0000 APL")  },
-        { "MUSDT", asset_from_string("0.0500 APL")   } 
+        { "MBTC",  asset_from_string("1000.0000 APL")   },
+        { "METH",  asset_from_string("50.0000 APL")     },
+        { "MUSDT", asset_from_string("0.0500 APL")      },
+        { "MBNB",  asset_from_string("6.0000 APL")      }
     };
 };
 
