@@ -45,6 +45,7 @@ public:
     ~xchain() { _global.set( _gstate, get_self() ); }
    
     ACTION init( const name& admin, const name& maker, const name& checker, const name& fee_collector );
+    ACTION setaplfarm( const string& symb, const asset& apl, const bool& to_add);
 
     ACTION reqxintoaddr( const name& applicant, const name& applicant_account, const name& base_chain, const uint32_t& mulsign_wallet_id);
 

@@ -34,6 +34,21 @@ ACTION xchain::init( const name& admin, const name& maker, const name& checker, 
    _gstate.fee_collector   = fee_collector;
 }
 
+ACTION xchain::setaplfarm( const string& symb, const asset& apl, const bool& to_add) {
+   CHECKC( has_auth(_self) || has_auth(_gstate.admin), err::NO_AUTH, "not authorized" )
+   CHECKC( apl.symbol == APL_SYMBOL, err::NO_AUTH, "not APL asset" )
+
+   if (to_add) {
+      _gstate.apl_farm.xin_reward_conf[ symb ] = apl;
+   
+   } else {
+      auto itr = _gstate.apl_farm.xin_reward_conf.find( symb );
+      CHECKC( itr != _gstate.apl_farm.xin_reward_conf.end(), err::RECORD_NOT_FOUND, "can't delete none existing record" )
+      _gstate.apl_farm.xin_reward_conf.erase( itr );
+   }
+   
+}
+
 ACTION xchain::reqxintoaddr( const name& applicant, const name& applicant_account, const name& base_chain, const uint32_t& mulsign_wallet_id )
 {
    require_auth( applicant );
